@@ -39,6 +39,9 @@ async function main() {
       typeof flags.generator === "string" && (flags.generator === "gemini" || flags.generator === "mock")
         ? (flags.generator as "gemini" | "mock")
         : "gemini";
+    if (generator === "gemini" && !process.env.GEMINI_API_KEY) {
+      throw new Error("GEMINI_API_KEY is not set. Set it or use --generator mock.");
+    }
     const result = await generate({
       inputPath: typeof flags.input === "string" ? flags.input : undefined,
       stdin: process.stdin as unknown as NodeJS.ReadableStream,
@@ -49,6 +52,7 @@ async function main() {
       size: typeof flags.size === "string" ? flags.size : undefined,
       theme: typeof flags.theme === "string" ? flags.theme : undefined,
       generator,
+      verbose: !!flags.verbose,
     });
     if (flags.json) {
       console.log(JSON.stringify(result));

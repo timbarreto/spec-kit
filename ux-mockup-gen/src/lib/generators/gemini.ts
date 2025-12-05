@@ -9,7 +9,7 @@ export async function renderWithGemini(uiModel: any, opts: RenderOpts): Promise<
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set");
   const genai = new GoogleGenerativeAI(apiKey);
-
+  
   // Choose a fast multimodal model; adjust per latest docs.
   const model = genai.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -27,8 +27,28 @@ export async function renderWithGemini(uiModel: any, opts: RenderOpts): Promise<
     },
   ];
 
-  const result = await model.generateContent({ contents: prompt });
-  const response = result.response;
+  // Timeout handling
+  const controller = new AbortController();
+  const timeoutMs = Number(process.env.GEMINI_TIMEOUT_MS ?? 5000);
+  const t = setTimeout(() => controller.abort(), timeoutMs);
+  let response: any;
+  try {
+    const result = await model.generateContent({ contents: prompt, signal: controller.signal as any });
+    response = result.response;
+  } catch (err) {
+    clearTimeout(t);
+    const msg = err instanceof Error ? err.message : String(err);
+    const isTimeout = controller.signal.aborted;
+    const isAuth = /unauthorized|permission|auth|401/i.test(msg);
+    if (isTimeout) {
+      throw new Error(`Gemini request failed (timeout after ${timeoutMs}ms)`);
+    }
+    if (isAuth) {
+      throw new Error("Gemini request failed: unauthorized or invalid GEMINI_API_KEY");
+    }
+    throw new Error(`Gemini request failed: ${msg}`);
+  }
+  clearTimeout(t);
 
   // Prefer structured parts with inlineData (per SDK docs)
   // response.candidates[0].content.parts may contain inlineData with base64
@@ -50,7 +70,7 @@ export async function renderWithGemini(uiModel: any, opts: RenderOpts): Promise<
   }
 
   // Fallback: try response.text()
-  const text = response?.text?.() ?? response?.text?.call(response);
+  const text = response?.text?.() ?? (typeof response?.text === "function" ? response.text() : undefined);
   if (typeof text === "string") {
     const match = text.match(/base64\s*:\s*([A-Za-z0-9+/=]+)/);
     if (match) return Uint8Array.from(Buffer.from(match[1], "base64"));

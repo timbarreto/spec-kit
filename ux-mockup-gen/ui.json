@@ -1,0 +1,176 @@
+{
+  "screen": {
+    "id": "login_screen",
+    "type": "form",
+    "title": "Sign in to StackerScan",
+    "subtitle": "Track and analyze your precious metals stack.",
+    "layout": {
+      "maxWidth": 420,
+      "alignment": "center",
+      "padding": {
+        "top": 40,
+        "right": 24,
+        "bottom": 40,
+        "left": 24
+      },
+      "spacing": 16,
+      "backgroundColor": "#020617"
+    },
+    "components": [
+      {
+        "id": "app_logo",
+        "type": "image",
+        "src": "/assets/logo-stackerscan.svg",
+        "alt": "StackerScan logo",
+        "width": 64,
+        "height": 64,
+        "alignment": "center"
+      },
+      {
+        "id": "title",
+        "type": "text",
+        "variant": "h1",
+        "value": "Welcome back",
+        "alignment": "center"
+      },
+      {
+        "id": "subtitle",
+        "type": "text",
+        "variant": "subtitle",
+        "value": "Sign in to continue to your portfolio.",
+        "alignment": "center"
+      },
+      {
+        "id": "email_field",
+        "type": "textInput",
+        "label": "Email",
+        "placeholder": "you@example.com",
+        "keyboardType": "email-address",
+        "autoCapitalize": "none",
+        "autoComplete": "email",
+        "required": true,
+        "validation": {
+          "type": "email",
+          "message": "Enter a valid email address."
+        }
+      },
+      {
+        "id": "password_field",
+        "type": "textInput",
+        "label": "Password",
+        "placeholder": "••••••••",
+        "secure": true,
+        "autoComplete": "password",
+        "required": true,
+        "validation": {
+          "minLength": 8,
+          "message": "Password must be at least 8 characters."
+        }
+      },
+      {
+        "id": "remember_row",
+        "type": "row",
+        "justify": "space-between",
+        "components": [
+          {
+            "id": "remember_me",
+            "type": "checkbox",
+            "label": "Remember me",
+            "defaultValue": true
+          },
+          {
+            "id": "forgot_password_link",
+            "type": "link",
+            "label": "Forgot password?",
+            "href": "/forgot-password"
+          }
+        ]
+      },
+      {
+        "id": "primary_login_button",
+        "type": "button",
+        "label": "Sign in",
+        "style": "primary",
+        "fullWidth": true,
+        "action": {
+          "type": "submit",
+          "endpoint": "/api/auth/login",
+          "method": "POST",
+          "body": {
+            "email": "@email_field.value",
+            "password": "@password_field.value",
+            "rememberMe": "@remember_me.value"
+          }
+        }
+      },
+      {
+        "id": "divider",
+        "type": "divider",
+        "label": "or continue with"
+      },
+      {
+        "id": "social_buttons",
+        "type": "column",
+        "spacing": 12,
+        "components": [
+          {
+            "id": "google_login_button",
+            "type": "button",
+            "label": "Continue with Google",
+            "style": "outline",
+            "fullWidth": true,
+            "icon": {
+              "position": "left",
+              "name": "google"
+            },
+            "action": {
+              "type": "oauth",
+              "provider": "google",
+              "endpoint": "/api/auth/oauth/google",
+              "method": "GET",
+              "scopes": [
+                "profile",
+                "email"
+              ],
+              "redirectUri": "@environment.oauthRedirectUri"
+            }
+          },
+          {
+            "id": "apple_login_button",
+            "type": "button",
+            "label": "Continue with Apple",
+            "style": "outline",
+            "fullWidth": true,
+            "icon": {
+              "position": "left",
+              "name": "apple"
+            },
+            "platformVisibility": [
+              "ios",
+              "macos",
+              "web"
+            ],
+            "action": {
+              "type": "oauth",
+              "provider": "apple",
+              "endpoint": "/api/auth/oauth/apple",
+              "method": "GET",
+              "scopes": [
+                "name",
+                "email"
+              ],
+              "redirectUri": "@environment.oauthRedirectUri"
+            }
+          }
+        ]
+      },
+      {
+        "id": "signup_prompt",
+        "type": "text",
+        "variant": "caption",
+        "alignment": "center",
+        "value": "New here? <link href=\"/signup\">Create an account</link>"
+      }
+    ]
+  }
+}

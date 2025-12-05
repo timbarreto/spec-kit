@@ -14,6 +14,7 @@ export interface GenerateOptions {
   size?: string;
   theme?: string;
   generator: "gemini" | "mock";
+  verbose?: boolean;
 }
 
 export async function generate(opts: GenerateOptions) {
@@ -23,6 +24,7 @@ export async function generate(opts: GenerateOptions) {
     throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
   }
   const start = Date.now();
+  if (opts.verbose) console.error(`[generate] backend=${opts.generator} format=${opts.format} size=${opts.size ?? "auto"}`);
   const imageBytes = await (opts.generator === "mock"
     ? renderWithMock(uiModel, { size: opts.size, theme: opts.theme, format: opts.format })
     : renderWithGemini(uiModel, { size: opts.size, theme: opts.theme, format: opts.format }));
