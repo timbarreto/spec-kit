@@ -31,7 +31,14 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+The plan MUST demonstrate compliance with CLI principles:
+- Text I/O contract: args/stdin → stdout; errors → stderr; exit codes.
+- Single‑responsibility: each command scoped clearly with consistent flags.
+- Test‑first: contract/unit/integration tests identified and scheduled.
+- Discoverability: `--help` content and examples drafted/updated.
+- Observability: logging strategy to `stderr`, no pollution of `stdout`.
+- Configuration order: flags → env → project → user; overrides documented.
+- Versioning impact: any breaking changes called out with migration notes.
 
 ## Project Structure
 
