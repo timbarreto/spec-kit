@@ -8,13 +8,32 @@ export async function renderWithGemini(uiModel: any, opts: RenderOpts): Promise<
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const sizeStr = opts.size ?? "auto";
+  const sizeStr = opts.size ?? "1080x1920";
   const themeStr = opts.theme ?? "default";
-  const prompt =
-    `Generate a UI mockup image for a mobile/web application based on this UI specification. ` +
-    `Create a realistic, polished mockup showing the described interface elements. ` +
-    `Size=${sizeStr}, theme=${themeStr}.\n\n` +
-    `UI JSON:\n` + JSON.stringify(uiModel, null, 2);
+  const prompt = `Generate a UI mockup image. Follow these rules EXACTLY:
+
+RENDERING RULES:
+- Render as a flat 2D screen capture, NO device frame or bezels
+- Use exact dimensions: ${sizeStr} pixels
+- Use EXACTLY the colors specified in the JSON (backgroundColor, etc.)
+- Render components in EXACT order listed, top to bottom
+- Use system default sans-serif font (SF Pro, Roboto, or similar)
+- Match spacing/padding values from JSON precisely in pixels
+- Style: clean, minimal, production-ready UI screenshot
+
+COMPONENT RENDERING:
+- textInput: rounded rectangle with label above, placeholder text inside
+- button[style=primary]: solid filled rounded rectangle
+- button[style=outline]: transparent with border
+- checkbox: small square with checkmark when checked
+- link: underlined text
+- divider: thin horizontal line with centered label
+- row/column: flex container with specified spacing
+
+Theme: ${themeStr}
+
+UI JSON:
+` + JSON.stringify(uiModel, null, 2);
 
   try {
     const response = await ai.models.generateContent({
