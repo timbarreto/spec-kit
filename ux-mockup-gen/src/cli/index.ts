@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-import { argv, stdin } from "bun";
-import { printHelp, printVersion } from "./help";
-import { generate } from "./commands/generate";
+// Use Node globals for broad compatibility
+import { printHelp, printVersion } from "./help.ts";
+import { generate } from "./commands/generate.ts";
 
 function logErr(msg: string) {
   console.error(msg);
@@ -25,7 +25,7 @@ function parseArgs(args: string[]) {
 }
 
 async function main() {
-  const flags = parseArgs(argv);
+  const flags = parseArgs(process.argv);
   if (flags.help) {
     printHelp();
     return;
@@ -35,24 +35,29 @@ async function main() {
     return;
   }
   try {
+    const generator =
+      typeof flags.generator === "string" && (flags.generator === "gemini" || flags.generator === "mock")
+        ? (flags.generator as "gemini" | "mock")
+        : "gemini";
     const result = await generate({
       inputPath: typeof flags.input === "string" ? flags.input : undefined,
-      stdin,
+      stdin: process.stdin as unknown as NodeJS.ReadableStream,
       outputPath: typeof flags.output === "string" ? flags.output : undefined,
       format: (typeof flags.format === "string" ? flags.format : "png") as "png" | "jpeg",
       json: !!flags.json,
       force: !!flags.force,
       size: typeof flags.size === "string" ? flags.size : undefined,
       theme: typeof flags.theme === "string" ? flags.theme : undefined,
-      generator: typeof flags.generator === "string" ? flags.generator : "gemini",
+      generator,
     });
     if (flags.json) {
-      process.stdout.write(JSON.stringify(result) + "\n");
+      console.log(JSON.stringify(result));
     } else {
-      process.stdout.write(result.outputPath + "\n");
+      console.log(result.outputPath);
     }
   } catch (err) {
     logErr(err instanceof Error ? err.message : String(err));
+    // Bun: exiting with non-zero is supported via process.exit
     process.exit(1);
   }
 }
