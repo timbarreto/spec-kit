@@ -8,6 +8,7 @@
     "ui-mockup": "bun run src/cli/index.ts"
   },
   "dependencies": {
+    "@google/genai": "^1.31.0",
     "@google/generative-ai": "^0.11.2"
   },
   "devDependencies": {

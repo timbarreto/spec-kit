@@ -2,7 +2,7 @@
   "screen": {
     "id": "login_screen",
     "type": "form",
-    "title": "Sign in to StackerScan",
+    "title": "Sign in to GenApp",
     "subtitle": "Track and analyze your precious metals stack.",
     "layout": {
       "maxWidth": 420,
@@ -20,8 +20,8 @@
       {
         "id": "app_logo",
         "type": "image",
-        "src": "/assets/logo-stackerscan.svg",
-        "alt": "StackerScan logo",
+        "src": "/assets/logo-GenApp.svg",
+        "alt": "GenApp logo",
         "width": 64,
         "height": 64,
         "alignment": "center"
