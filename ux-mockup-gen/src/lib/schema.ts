@@ -5,7 +5,9 @@ export function validateUI(model: any): ValidationResult {
   if (typeof model !== "object" || model === null) {
     errors.push("root must be an object");
   }
-  if (!Array.isArray(model?.components)) {
+  // Support both root-level components and screen.components structure
+  const components = model?.components ?? model?.screen?.components;
+  if (!Array.isArray(components)) {
     errors.push("components must be an array");
   }
   // Minimal validation for MVP; extend later per data-model

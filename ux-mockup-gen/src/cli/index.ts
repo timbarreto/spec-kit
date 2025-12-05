@@ -9,13 +9,27 @@ function logErr(msg: string) {
 
 function parseArgs(args: string[]) {
   const flags: Record<string, string | boolean> = {};
+  const valueFlags = ["input", "output", "format", "size", "theme", "generator"];
   for (let i = 2; i < args.length; i++) {
     const a = args[i];
     if (a === "--help" || a === "-h") flags.help = true;
     else if (a === "--version" || a === "-V") flags.version = true;
     else if (a.startsWith("--")) {
-      const [k, v] = a.slice(2).split("=");
-      flags[k] = v ?? true;
+      const eqIndex = a.indexOf("=");
+      if (eqIndex !== -1) {
+        // --key=value format
+        const k = a.slice(2, eqIndex);
+        const v = a.slice(eqIndex + 1);
+        flags[k] = v;
+      } else {
+        // --key value format or boolean flag
+        const k = a.slice(2);
+        if (valueFlags.includes(k) && i + 1 < args.length && !args[i + 1].startsWith("-")) {
+          flags[k] = args[++i];
+        } else {
+          flags[k] = true;
+        }
+      }
     } else if (a === "-o") flags.output = args[++i];
     else if (a === "-f") flags.format = args[++i];
     else if (a === "-g") flags.generator = args[++i];
