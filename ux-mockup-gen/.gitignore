@@ -1,0 +1,11 @@
+# Node/Bun project ignores
+node_modules/
+dist/
+build/
+*.log
+.env*
+
+# Generated output
+*.png
+*.jpeg
+*.jpg
