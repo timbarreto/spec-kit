@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: UI Mockup Generation Contract
+  version: 1.0.0
+paths:
+  /generate:
+    post:
+      summary: Generate UI mockup image from JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UIModel'
+      parameters:
+        - name: format
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [png, jpeg]
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 1024x768
+      responses:
+        '200':
+          description: Rendered image
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Validation error
+        '500':
+          description: Rendering error
+components:
+  schemas:
+    UIModel:
+      type: object
+      properties:
+        components:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              props:
+                type: object
+              children:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UIComponent'
+        layout:
+          type: object
+        styles:
+          type: object
+        metadata:
+          type: object
+      required: [components]
+    UIComponent:
+      type: object
+      properties:
+        type:
+          type: string
+        props:
+          type: object
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/UIComponent'
+      required: [type]
